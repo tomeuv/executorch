@@ -547,6 +547,17 @@ install(FILES tools/cmake/executorch-config.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ExecuTorch
 )
 
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" EXECUTORCH_VERSION)
+string(STRIP "${EXECUTORCH_VERSION}" EXECUTORCH_VERSION)
+configure_file(
+  tools/cmake/executorch.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/executorch.pc
+  @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/executorch.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+)
+
 if(EXECUTORCH_BUILD_ARM_BAREMETAL)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/backends/arm)
   list(APPEND _executorch_backends executorch_delegate_ethos_u)
