@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <cstdint>
 #include <stdio.h>
 #include <string>
 #include <system_error>
