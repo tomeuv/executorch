@@ -494,6 +494,12 @@ install(
   PATTERN "*.h"
 )
 install(
+  DIRECTORY runtime/backend/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/executorch/runtime/backend
+  FILES_MATCHING
+  PATTERN "*.h"
+)
+install(
   DIRECTORY runtime/executor/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/executorch/runtime/executor
   FILES_MATCHING
@@ -532,8 +538,10 @@ install(
 install(
   TARGETS executorch executorch_core
   EXPORT ExecuTorchTargets
-  INCLUDES
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(FILES tools/cmake/executorch-config.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ExecuTorch
@@ -888,6 +896,13 @@ if(EXECUTORCH_BUILD_PYBIND)
   target_compile_options(util PUBLIC ${_pybind_compile_options})
   target_link_libraries(util PRIVATE torch c10 executorch extension_tensor)
 
+  install(
+    TARGETS util
+    EXPORT ExecuTorchTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+
   # pybind portable_lib
   pybind11_add_module(portable_lib SHARED extension/pybindings/pybindings.cpp)
   # The actual output file needs a leading underscore so it can coexist with
@@ -1059,7 +1074,7 @@ endif()
 target_link_libraries(executorch_kernels INTERFACE ${_executorch_kernels})
 
 install(TARGETS executorch_backends executorch_extensions executorch_kernels
-        EXPORT ExecuTorchTargets
+  EXPORT ExecuTorchTargets
 )
 
 if(EXECUTORCH_BUILD_EXECUTOR_RUNNER)

@@ -130,5 +130,5 @@ add_dependencies(flatccrt flatcc_cli)
 set_property(TARGET flatccrt PROPERTY POSITION_INDEPENDENT_CODE ON)
 install(
   TARGETS flatccrt
-  DESTINATION ${CMAKE_BINARY_DIR}/lib
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
