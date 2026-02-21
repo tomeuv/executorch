@@ -42,6 +42,24 @@ SUPPORTED_CUDA_VERSIONS = (
 # SUPPORTED_CUDA_VERSIONS above if needed.
 
 
+def _get_installed_torch_cuda_version():
+    try:
+        import torch
+
+        return torch.version.cuda
+    except Exception:
+        return None
+
+
+def _torch_is_installed():
+    try:
+        import torch  # noqa: F401
+
+        return True
+    except Exception:
+        return False
+
+
 def install_requirements(use_pytorch_nightly):
     # Skip pip install on Intel macOS if using nightly.
     if use_pytorch_nightly and is_intel_mac_os():
@@ -54,22 +72,41 @@ def install_requirements(use_pytorch_nightly):
 
     # Determine the appropriate PyTorch URL based on CUDA delegate status
     torch_url = determine_torch_url(TORCH_NIGHTLY_URL_BASE, SUPPORTED_CUDA_VERSIONS)
+    torch_cpu_only = torch_url.endswith("/cpu")
+    torch_installed = _torch_is_installed()
+    installed_torch_cuda = _get_installed_torch_cuda_version() if torch_installed else None
 
     # pip packages needed by exir.
-    TORCH_PACKAGE = [
-        # Setting use_pytorch_nightly to false to test the pinned PyTorch commit. Note
-        # that we don't need to set any version number there because they have already
-        # been installed on CI before this step, so pip won't reinstall them
-        (
-            f"torch=={TORCH_VERSION}.{NIGHTLY_VERSION}"
-            if use_pytorch_nightly
-            else "torch"
-        ),
-    ]
+    # Select the torch package version to install.
+    # When --use-pt-pinned-commit is set, install the pinned nightly if torch is
+    # missing or incompatible with the detected CUDA mode.
+    torch_package = (
+        f"torch=={TORCH_VERSION}.{NIGHTLY_VERSION}"
+        if use_pytorch_nightly or not torch_installed
+        else "torch"
+    )
+    if torch_cpu_only and installed_torch_cuda:
+        torch_package = f"torch=={TORCH_VERSION}.{NIGHTLY_VERSION}"
+
+    torch_install_cmd = [sys.executable, "-m", "pip", "install", torch_package]
+    if torch_cpu_only:
+        # Prefer CPU-only wheels to avoid CUDA-enabled installs when CUDA toolchain
+        # is not present.
+        torch_install_cmd += [
+            "--index-url",
+            torch_url,
+            "--extra-index-url",
+            "https://pypi.org/simple",
+        ]
+    else:
+        torch_install_cmd += ["--extra-index-url", torch_url]
+
+    if (not torch_installed) or (torch_cpu_only and installed_torch_cuda):
+        torch_install_cmd += ["--upgrade", "--force-reinstall"]
+
+    subprocess.run(torch_install_cmd, check=True)
 
     # Install the requirements for core ExecuTorch package.
-    # `--extra-index-url` tells pip to look for package
-    # versions on the provided URL if they aren't available on the default URL.
     subprocess.run(
         [
             sys.executable,
@@ -78,9 +115,6 @@ def install_requirements(use_pytorch_nightly):
             "install",
             "-r",
             "requirements-dev.txt",
-            *TORCH_PACKAGE,
-            "--extra-index-url",
-            torch_url,
         ],
         check=True,
     )
