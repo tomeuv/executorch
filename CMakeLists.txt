@@ -843,6 +843,10 @@ if(EXECUTORCH_BUILD_PYBIND)
     endif()
   endif()
 
+  if(TARGET extension_threadpool)
+    list(APPEND _dep_libs extension_threadpool)
+  endif()
+
   if(EXECUTORCH_BUILD_TESTS)
     list(APPEND _dep_libs test_backend_compiler_lib)
   endif()
