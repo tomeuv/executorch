@@ -41,6 +41,9 @@ add_library(
                   ${CMAKE_CURRENT_SOURCE_DIR}/bundled_program.cpp
 )
 executorch_set_version(bundled_program)
+set_target_properties(bundled_program PROPERTIES
+  OUTPUT_NAME executorch_bundled_program
+)
 target_link_libraries(bundled_program PUBLIC executorch)
 target_include_directories(
   bundled_program

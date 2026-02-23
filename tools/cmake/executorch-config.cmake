@@ -29,7 +29,7 @@ include(CMakeFindDependencyMacro)
 find_package(tokenizers CONFIG)
 
 set(_root "${CMAKE_CURRENT_LIST_DIR}/../../..")
-set(required_lib_list executorch executorch_core portable_kernels)
+set(required_lib_list executorch executorch_core executorch_portable_kernels)
 set(EXECUTORCH_LIBRARIES)
 set(EXECUTORCH_INCLUDE_DIRS
     ${_root}/include ${_root}/include/executorch/runtime/core/portable_type/c10
@@ -39,7 +39,7 @@ foreach(lib ${required_lib_list})
   set(lib_var "LIB_${lib}")
   find_library(
     ${lib_var} ${lib}
-    HINTS "${_root}/lib"
+    HINTS "${_root}/${CMAKE_INSTALL_LIBDIR}" "${_root}/lib"
     CMAKE_FIND_ROOT_PATH_BOTH
   )
   if(NOT ${lib_var})

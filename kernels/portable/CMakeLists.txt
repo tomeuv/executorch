@@ -52,6 +52,9 @@ message("Generated files ${gen_command_sources}")
 #
 add_library(portable_kernels ${_portable_kernels__srcs})
 executorch_set_version(portable_kernels)
+set_target_properties(portable_kernels PROPERTIES
+  OUTPUT_NAME executorch_portable_kernels
+)
 target_link_libraries(
   portable_kernels PRIVATE executorch_core kernels_util_all_deps
 )

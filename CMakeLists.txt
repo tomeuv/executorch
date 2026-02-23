@@ -928,6 +928,7 @@ if(EXECUTORCH_BUILD_PYBIND)
     util ${CMAKE_CURRENT_SOURCE_DIR}/extension/aten_util/aten_bridge.cpp
   )
   executorch_set_version(util)
+  set_target_properties(util PROPERTIES OUTPUT_NAME executorch_util)
   target_include_directories(
     util PUBLIC ${_common_include_directories} ${TORCH_INCLUDE_DIRS}
   )
