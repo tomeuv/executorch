@@ -973,11 +973,6 @@ if(EXECUTORCH_BUILD_PYBIND)
     )
   endif()
 
-  install(
-    TARGETS portable_lib
-    EXPORT ExecuTorchTargets
-    LIBRARY DESTINATION executorch/extension/pybindings
-  )
 endif()
 
 if(EXECUTORCH_BUILD_WASM)

@@ -44,5 +44,4 @@ if(TARGET bundled_program)
 endif()
 target_link_libraries(selective_build PRIVATE executorch_core program_schema)
 
-# Install the module
-install(TARGETS selective_build LIBRARY DESTINATION executorch/codegen/tools)
+# Note: this module is installed by setup.py (pip install), not cmake --install.
