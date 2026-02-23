@@ -51,6 +51,7 @@ message("Generated files ${gen_command_sources}")
 # Focused on portability and understandability rather than speed.
 #
 add_library(portable_kernels ${_portable_kernels__srcs})
+executorch_set_version(portable_kernels)
 target_link_libraries(
   portable_kernels PRIVATE executorch_core kernels_util_all_deps
 )

@@ -34,6 +34,7 @@ add_library(
   extension_threadpool threadpool.cpp threadpool_guard.cpp thread_parallel.cpp
                        cpuinfo_utils.cpp
 )
+executorch_set_version(extension_threadpool)
 target_link_libraries(
   extension_threadpool PUBLIC executorch_core cpuinfo pthreadpool
 )

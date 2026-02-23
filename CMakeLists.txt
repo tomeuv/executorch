@@ -48,7 +48,29 @@
 # TODO Lower to 3.24 when XNNPACK dependency is updated to include
 # https://github.com/google/XNNPACK/commit/c690daa67f883e1b627aadf7684c06797e9a0684
 cmake_minimum_required(VERSION 3.29)
-project(executorch)
+
+# Read the canonical version from version.txt and strip pre-release tags
+# (e.g. "1.2.0a0" → "1.2.0") so CMake's project(VERSION) can parse it.
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" _et_raw_version)
+string(STRIP "${_et_raw_version}" _et_raw_version)
+string(REGEX REPLACE "[^0-9.].*" "" _et_version "${_et_raw_version}")
+
+project(executorch VERSION ${_et_version})
+
+message(STATUS "ExecuTorch version: ${PROJECT_VERSION}"
+               " (SOVERSION ${PROJECT_VERSION_MAJOR})")
+
+# Helper: set VERSION and SOVERSION on a shared library target.
+# Static or interface targets are silently skipped.
+function(executorch_set_version target)
+  get_target_property(_type ${target} TYPE)
+  if(_type STREQUAL "SHARED_LIBRARY")
+    set_target_properties(${target} PROPERTIES
+      VERSION   "${executorch_VERSION}"
+      SOVERSION "${executorch_VERSION_MAJOR}"
+    )
+  endif()
+endfunction()
 
 set(EXECUTORCH_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -378,6 +400,7 @@ list(FILTER _executorch_core__srcs EXCLUDE REGEX
 list(APPEND _executorch_core__srcs ${EXECUTORCH_PAL_DEFAULT_FILE_PATH})
 
 add_library(executorch_core ${_executorch_core__srcs})
+executorch_set_version(executorch_core)
 
 # Legacy name alias.
 add_library(executorch_no_prim_ops ALIAS executorch_core)
@@ -454,6 +477,7 @@ endif()
 # any backends.
 #
 add_library(executorch ${_executorch__srcs})
+executorch_set_version(executorch)
 target_link_libraries(executorch PRIVATE executorch_core)
 target_include_directories(executorch PUBLIC ${_common_include_directories})
 target_compile_definitions(executorch PUBLIC C10_USING_CUSTOM_GENERATED_MACROS)
@@ -903,6 +927,7 @@ if(EXECUTORCH_BUILD_PYBIND)
   add_library(
     util ${CMAKE_CURRENT_SOURCE_DIR}/extension/aten_util/aten_bridge.cpp
   )
+  executorch_set_version(util)
   target_include_directories(
     util PUBLIC ${_common_include_directories} ${TORCH_INCLUDE_DIRS}
   )

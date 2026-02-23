@@ -19,6 +19,7 @@ endif()
 list(TRANSFORM _extension_named_data_map__srcs PREPEND "${EXECUTORCH_ROOT}/")
 # Create the library
 add_library(extension_named_data_map ${_extension_named_data_map__srcs})
+executorch_set_version(extension_named_data_map)
 
 # Link dependencies
 target_link_libraries(extension_named_data_map PUBLIC executorch_core)

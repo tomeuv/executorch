@@ -14,6 +14,7 @@ if(NOT EXECUTORCH_ROOT)
 endif()
 list(TRANSFORM _extension_evalue_util__srcs PREPEND "${EXECUTORCH_ROOT}/")
 add_library(extension_evalue_util ${_extension_evalue_util__srcs})
+executorch_set_version(extension_evalue_util)
 target_link_libraries(extension_evalue_util executorch_core)
 target_include_directories(
   extension_evalue_util PUBLIC ${_common_include_directories}

@@ -220,6 +220,7 @@ function(gen_operators_lib)
   endif()
 
   add_library(${GEN_LIB_NAME})
+  executorch_set_version(${GEN_LIB_NAME})
 
   set(_srcs_list ${_out_dir}/RegisterCodegenUnboxedKernelsEverything.cpp
                  ${_out_dir}/Functions.h ${_out_dir}/NativeFunctions.h

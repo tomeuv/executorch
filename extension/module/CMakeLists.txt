@@ -27,6 +27,7 @@ if(CMAKE_TOOLCHAIN_IOS
 else()
   add_library(extension_module ${_extension_module__srcs})
 endif()
+executorch_set_version(extension_module)
 target_link_libraries(
   extension_module PRIVATE executorch_core extension_data_loader
                            extension_flat_tensor extension_named_data_map

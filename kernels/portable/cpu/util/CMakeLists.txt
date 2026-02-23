@@ -27,6 +27,7 @@ set(_common_compile_options
 )
 
 add_library(kernels_util_all_deps ${_kernels_util_all_deps__srcs})
+executorch_set_version(kernels_util_all_deps)
 target_link_libraries(kernels_util_all_deps PRIVATE executorch_core)
 target_include_directories(
   kernels_util_all_deps PUBLIC ${_common_include_directories}

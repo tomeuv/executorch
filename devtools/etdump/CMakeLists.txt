@@ -49,6 +49,7 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/data_sinks/file_data_sink.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/data_sinks/file_data_sink.h
 )
+executorch_set_version(etdump)
 target_link_libraries(
   etdump
   PUBLIC flatccrt
